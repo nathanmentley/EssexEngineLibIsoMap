@@ -14,10 +14,10 @@
 EssexEngine::Libs::IsoMap::MapData::MapData(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument) {
     gameContext = _gameContext;
     
-    tiles = std::map<int, UniquePointer<MapTile>>();
+    tiles = std::map<int, std::unique_ptr<MapTile>>();
     
-    doodadDefs = std::map<int, UniquePointer<MapDoodadDef>>();
-    characterDefs = std::map<int, UniquePointer<MapCharacterDef>>();
+    doodadDefs = std::map<int, std::unique_ptr<MapDoodadDef>>();
+    characterDefs = std::map<int, std::unique_ptr<MapCharacterDef>>();
     
     map = MapTileRTree();
     doodads = DoodadRTree();
@@ -44,7 +44,7 @@ EssexEngine::Libs::IsoMap::MapData::~MapData() {
 }
 
 EssexEngine::WeakPointer<EssexEngine::Libs::IsoMap::MapTile> EssexEngine::Libs::IsoMap::MapData::GetTile(int id) {
-    return tiles[id].GetWeakPointer();
+    return EssexEngine::WeakPointer<MapTile>(tiles[id].get());
 }
 
 EssexEngine::Libs::IsoMap::MapTileRTreeVisitor EssexEngine::Libs::IsoMap::MapData::GetTiles(MapTileRTree::BoundingBox bounds) {
@@ -265,7 +265,7 @@ bool EssexEngine::Libs::IsoMap::MapData::MoveCharacter(WeakPointer<MapCharacter>
 }
 
 EssexEngine::WeakPointer<EssexEngine::Libs::IsoMap::MapPlayerCharacter> EssexEngine::Libs::IsoMap::MapData::GetCharacter() {
-    return player;
+    return WeakPointer<MapPlayerCharacter>(player.get());
 }
 
 
@@ -293,24 +293,29 @@ std::vector<std::string>* EssexEngine::Libs::IsoMap::MapData::GetScripts(std::st
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadTiles() {
-    std::list<UniquePointer<Daemons::Json::IJsonNode>> tilesInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(gameDocument, "tiles");
+    std::list<std::unique_ptr<Daemons::Json::IJsonNode>> tilesInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(gameDocument, "tiles");
     
     int counter = 0;
-    for(auto& tileInFile : tilesInFile) {
+    
+    for(auto& tile : tilesInFile) {
+        auto tileInFile = WeakPointer<Daemons::Json::IJsonNode>(tile.get());
+
         std::string filename = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetStringFromNode(tileInFile, "filename");
         
         int spritex = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(tileInFile, "spritexposition");
         int spritey = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(tileInFile, "spriteyposition");
         bool blocking = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetBoolFromNode(tileInFile, "blocking");
         
-        tiles[counter++] = UniquePointer<MapTile>(
+        tiles[counter++] = std::unique_ptr<MapTile>(
             new MapTile(
-                gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetSprite(
-                    gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(filename).GetWeakPointer(),
-                    spritex,
-                    spritey,
-                    MapTile::TILE_WIDTH,
-                    MapTile::TILE_HEIGHT
+                gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetEntity(
+                    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetSprite(
+                        gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(filename),
+                        spritex,
+                        spritey,
+                        MapTile::TILE_WIDTH,
+                        MapTile::TILE_HEIGHT
+                    )
                 ),
                 blocking
             )
@@ -319,17 +324,19 @@ void EssexEngine::Libs::IsoMap::MapData::LoadTiles() {
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadDoodadDefs() {
-    std::list<UniquePointer<Daemons::Json::IJsonNode>> doodadsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(gameDocument, "doodads");
+    std::list<std::unique_ptr<Daemons::Json::IJsonNode>> doodadsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(gameDocument, "doodads");
     
     int counter = 0;
-    for(auto& doodadInFile : doodadsInFile) {
+    for(auto& doodad : doodadsInFile) {
+        auto doodadInFile = WeakPointer<Daemons::Json::IJsonNode>(doodad.get());
+
         std::string filename = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetStringFromNode(doodadInFile, "filename");
         int spritex = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(doodadInFile, "spritexposition");
         int spritey = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(doodadInFile, "spriteyposition");
         int spritewidth = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(doodadInFile, "spritewidth");
         int spriteheight = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(doodadInFile, "spriteheight");
         
-        doodadDefs[counter++] = UniquePointer<MapDoodadDef>(
+        doodadDefs[counter++] = std::unique_ptr<MapDoodadDef>(
             new MapDoodadDef(
                 filename,
                 spritex,
@@ -342,24 +349,28 @@ void EssexEngine::Libs::IsoMap::MapData::LoadDoodadDefs() {
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadCharacterDefs() {
-    std::list<UniquePointer<Daemons::Json::IJsonNode>> charactersInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(gameDocument, "characters");
+    std::list<std::unique_ptr<Daemons::Json::IJsonNode>> charactersInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(gameDocument, "characters");
     
     int counter = 0;
-    for(auto& characterInFile : charactersInFile) {
+    for(auto& character: charactersInFile) {
+        auto characterInFile = WeakPointer<Daemons::Json::IJsonNode>(character.get());
+
         std::string filenamebody = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetStringFromNode(characterInFile, "filenamebody");
         std::string filenamehead = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetStringFromNode(characterInFile, "filenamehead");
         std::string filenameweapon = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetStringFromNode(characterInFile, "filenameweapon");
         
-        characterDefs[counter++] = UniquePointer<MapCharacterDef>(
+        characterDefs[counter++] = std::unique_ptr<MapCharacterDef>(
             new MapCharacterDef(filenamebody, filenamehead, filenameweapon)
         );
     }
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadMapTiles() {
-    std::list<UniquePointer<Daemons::Json::IJsonNode>> maptilesInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "maptiles");
+    std::list<std::unique_ptr<Daemons::Json::IJsonNode>> maptilesInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "maptiles");
     
-    for(auto& maptileInFile : maptilesInFile) {
+    for(auto& maptile : maptilesInFile) {
+        auto maptileInFile = WeakPointer<Daemons::Json::IJsonNode>(maptile.get());
+
         int x = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(maptileInFile, "x");
         int y = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(maptileInFile, "y");
         int tile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(maptileInFile, "tile");
@@ -375,9 +386,11 @@ void EssexEngine::Libs::IsoMap::MapData::LoadMapTiles() {
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadDoodads() {
-    std::list<UniquePointer<Daemons::Json::IJsonNode>> doodadsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "doodads");
+    std::list<std::unique_ptr<Daemons::Json::IJsonNode>> doodadsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "doodads");
     
-    for(auto& doodadInFile : doodadsInFile) {
+    for(auto& doodad : doodadsInFile) {
+        auto doodadInFile = WeakPointer<Daemons::Json::IJsonNode>(doodad.get());
+
         int doodadsId = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(doodadInFile, "doodad");
         
         std::string filename = doodadDefs[doodadsId]->GetFilename();
@@ -398,19 +411,21 @@ void EssexEngine::Libs::IsoMap::MapData::LoadDoodads() {
         bbdoodad.edges[1].first  = y;
         bbdoodad.edges[1].second = y+h;
         
-        MapDoodad* doodad = new MapDoodad(gameContext, filename, spritex, spritey, spriteh, spritew);
-        doodad->SetPosition(x, y);
+        MapDoodad* doodadObj = new MapDoodad(gameContext, filename, spritex, spritey, spriteh, spritew);
+        doodadObj->SetPosition(x, y);
         doodads.Insert(
-            doodad,
+            doodadObj,
             bbdoodad
         );
     }
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadNPCs() {
-    std::list<UniquePointer<Daemons::Json::IJsonNode>> npcsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "npcs");
+    std::list<std::unique_ptr<Daemons::Json::IJsonNode>> npcsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "npcs");
     
-    for(auto& npcInFile : npcsInFile) {
+    for(auto& npc : npcsInFile) {
+        auto npcInFile = WeakPointer<Daemons::Json::IJsonNode>(npc.get());
+
         int characterId = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(npcInFile, "character");
         
         std::string filenamebody = characterDefs[characterId]->GetFilenameBody();
@@ -428,20 +443,21 @@ void EssexEngine::Libs::IsoMap::MapData::LoadNPCs() {
         bbchar.edges[1].first  = y;
         bbchar.edges[1].second = y+h;
         
-        MapNPCCharacter* npc = new MapNPCCharacter(
+        MapNPCCharacter* npcObj = new MapNPCCharacter(
             gameContext,
             filenamebody,
             filenamehead,
             filenameweapon
         );
-        npc->SetPosition(x, y);
-        AddCharacter(npc, bbchar);
+        npcObj->SetPosition(x, y);
+        AddCharacter(npcObj, bbchar);
     }
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadPlayer() {
-    UniquePointer<Daemons::Json::IJsonNode> playerInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNode(mapDocument, "player");
-    
+    std::unique_ptr<Daemons::Json::IJsonNode> playerNode = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNode(mapDocument, "player");
+    auto playerInFile = WeakPointer<Daemons::Json::IJsonNode>(playerNode.get());
+
     int characterId = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(playerInFile, "character");
     
     int x = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetIntFromNode(playerInFile, "x");
@@ -453,11 +469,13 @@ void EssexEngine::Libs::IsoMap::MapData::LoadPlayer() {
     std::string filenamehead = characterDefs[characterId]->GetFilenameHead();
     std::string filenameweapon = characterDefs[characterId]->GetFilenameWeapon();
     
-    player = new MapPlayerCharacter(
-        gameContext,
-        filenamebody,
-        filenamehead,
-        filenameweapon
+    player = std::unique_ptr<MapPlayerCharacter>(
+        new MapPlayerCharacter(
+            gameContext,
+            filenamebody,
+            filenamehead,
+            filenameweapon
+        )
     );
     player->SetPosition(x, y);
     
@@ -467,13 +485,15 @@ void EssexEngine::Libs::IsoMap::MapData::LoadPlayer() {
     bbplayer.edges[1].first  = y;
     bbplayer.edges[1].second = y+h;
     
-    AddCharacter(player.Cast<MapCharacter>(), bbplayer);
+    AddCharacter(WeakPointer<MapPlayerCharacter>(player.get()).Cast<MapCharacter>(), bbplayer);
 }
 
 void EssexEngine::Libs::IsoMap::MapData::LoadScripts() {
-    std::list<UniquePointer<Daemons::Json::IJsonNode>> scriptsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "scripts");
+    std::list<std::unique_ptr<Daemons::Json::IJsonNode>> scriptsInFile = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetJsonNodeArray(mapDocument, "scripts");
     
-    for(auto& scriptInFile : scriptsInFile) {
+    for(auto& script : scriptsInFile) {
+        auto scriptInFile = WeakPointer<Daemons::Json::IJsonNode>(script.get());
+        
         std::string type = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetStringFromNode(scriptInFile, "type");
         std::string logic = gameContext->GetDaemon<Daemons::Json::JsonDaemon>()->GetStringFromNode(scriptInFile, "logic");
         

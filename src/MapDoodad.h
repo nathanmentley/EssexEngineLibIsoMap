@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include <EssexEngineCore/SharedPointer.h>
 #include <EssexEngineCore/WeakPointer.h>
 #include <EssexEngineLibIsoMap/MapObject.h>
 
@@ -28,7 +27,7 @@ namespace IsoMap{
         void Update();
     protected:
     private:
-        std::vector<SharedPointer<Daemons::Gfx::Entity>> entities;
+        std::vector<UniquePointer<Daemons::Gfx::Entity>> entities;
         int currentAnimationFrame;
     };
 }}};

@@ -14,7 +14,7 @@
 EssexEngine::Libs::IsoMap::Map::Map(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument) {
     gameContext = _gameContext;
     
-    mapData = UniquePointer<MapData>(new MapData(gameContext, _gameDocument, _mapDocument));
+    mapData = WeakPointer<MapData>(new MapData(_gameContext, _gameDocument, _mapDocument));
     
     InitMap();
     
@@ -46,7 +46,7 @@ void EssexEngine::Libs::IsoMap::Map::Render() {
     
     for (auto tileInfo : closeByTiles.data) {
         WeakPointer<MapTile> tile = mapData->GetTile(tileInfo.id);
-        SharedPointer<Daemons::Gfx::Entity> entity = gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetEntity(tile->GetSprite());
+        WeakPointer<Daemons::Gfx::Entity> entity = tile->GetEntity();
         
         RStarBoundingBox<2> tileLocation = tileInfo.box;
         double x = tileLocation.edges[0].first;
@@ -58,7 +58,7 @@ void EssexEngine::Libs::IsoMap::Map::Render() {
         entity->SetPosition(screenx, screeny);
         entity->SetScale(zoom, zoom);
         
-        gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(entity.GetWeakPointer());
+        gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(entity);
     }
     
     //Setup and Render Doodads

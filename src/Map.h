@@ -11,7 +11,7 @@
 #pragma once
 
 #include <EssexEngineCore/Context.h>
-#include <EssexEngineCore/UniquePointer.h>
+#include <EssexEngineCore/WeakPointer.h>
 
 #include <EssexEngineJsonDaemon/IJsonDocument.h>
 
@@ -61,7 +61,7 @@ namespace IsoMap{
     private:
         WeakPointer<Context> gameContext;
         
-        UniquePointer<MapData> mapData;
+        WeakPointer<MapData> mapData;
         
         float zoom;
         double currentScreenX;

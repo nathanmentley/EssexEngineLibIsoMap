@@ -71,15 +71,15 @@ namespace IsoMap{
         WeakPointer<Daemons::Json::IJsonDocument> gameDocument;
         WeakPointer<Daemons::Json::IJsonDocument> mapDocument;
         
-        std::map<int, UniquePointer<MapTile>> tiles;
-        std::map<int, UniquePointer<MapDoodadDef>> doodadDefs;
-        std::map<int, UniquePointer<MapCharacterDef>> characterDefs;
+        std::map<int, std::unique_ptr<MapTile>> tiles;
+        std::map<int, std::unique_ptr<MapDoodadDef>> doodadDefs;
+        std::map<int, std::unique_ptr<MapCharacterDef>> characterDefs;
         
         MapTileRTree map;
         DoodadRTree doodads;
         CharacterRTree characters;
         
-        WeakPointer<MapPlayerCharacter> player;
+        std::unique_ptr<MapPlayerCharacter> player;
         
         std::map<std::string, std::vector<std::string>> scripts;
     };

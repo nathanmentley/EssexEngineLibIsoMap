@@ -13,9 +13,9 @@
 
 EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameContext, std::string bodyTexture, std::string headTexture, std::string weaponTexture)
 :MapObject() {
-    bodyEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<SharedPointer<Daemons::Gfx::Entity>>>>();
-    headEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<SharedPointer<Daemons::Gfx::Entity>>>>();
-    weaponEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<SharedPointer<Daemons::Gfx::Entity>>>>();
+    bodyEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>>();
+    headEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>>();
+    weaponEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>>();
     
     for(int i = 0; i < 7; i++) {
         int animationOffSet = 0;
@@ -24,21 +24,21 @@ EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameC
             animationOffSet += GetFramesForAnimation(static_cast<CharacterAnimations>(j));
         }
         
-        bodyEntities[static_cast<CharacterAnimations>(i)] = std::map<CharacterDirections, std::vector<SharedPointer<Daemons::Gfx::Entity>>>();
+        bodyEntities[static_cast<CharacterAnimations>(i)] = std::map<CharacterDirections, std::vector<UniquePointer<Daemons::Gfx::Entity>>>();
         
         for(int j = 0; j < 8; j++) {
-            bodyEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)] = std::vector<SharedPointer<Daemons::Gfx::Entity>>();
+            bodyEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)] = std::vector<UniquePointer<Daemons::Gfx::Entity>>();
             
             for(int k = 0; k < GetFramesForAnimation(static_cast<CharacterAnimations>(i)); k++) {
                 bodyEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)].push_back(
                     gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetEntity(
                         gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetSprite(
-                            gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(bodyTexture).GetWeakPointer(),
+                            gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(bodyTexture),
                             CHARACTER_WIDTH * (animationOffSet + k),
                             CHARACTER_HEIGHT * j,
                             CHARACTER_WIDTH,
                             CHARACTER_HEIGHT
-                        ).GetWeakPointer()
+                        )
                     )
                 );
             }
@@ -51,21 +51,21 @@ EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameC
             animationOffSet += GetFramesForAnimation(static_cast<CharacterAnimations>(j));
         }
         
-        headEntities[static_cast<CharacterAnimations>(i)] = std::map<CharacterDirections, std::vector<SharedPointer<Daemons::Gfx::Entity>> >();
+        headEntities[static_cast<CharacterAnimations>(i)] = std::map<CharacterDirections, std::vector<UniquePointer<Daemons::Gfx::Entity>> >();
         
         for(int j = 0; j < 8; j++) {
-            headEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)] = std::vector<SharedPointer<Daemons::Gfx::Entity>>();
+            headEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)] = std::vector<UniquePointer<Daemons::Gfx::Entity>>();
             
             for(int k = 0; k < GetFramesForAnimation(static_cast<CharacterAnimations>(i)); k++) {
                 headEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)].push_back(
                     gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetEntity(
                         gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetSprite(
-                            gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(headTexture).GetWeakPointer(),
+                            gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(headTexture),
                             CHARACTER_WIDTH * (animationOffSet + k),
                             CHARACTER_HEIGHT * j,
                             CHARACTER_WIDTH,
                             CHARACTER_HEIGHT
-                        ).GetWeakPointer()
+                        )
                     )
                 );
             }
@@ -78,21 +78,21 @@ EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameC
             animationOffSet += GetFramesForAnimation(static_cast<CharacterAnimations>(j));
         }
         
-        weaponEntities[static_cast<CharacterAnimations>(i)] = std::map<CharacterDirections, std::vector<SharedPointer<Daemons::Gfx::Entity>> >();
+        weaponEntities[static_cast<CharacterAnimations>(i)] = std::map<CharacterDirections, std::vector<UniquePointer<Daemons::Gfx::Entity>> >();
         
         for(int j = 0; j < 8; j++) {
-            weaponEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)] = std::vector<SharedPointer<Daemons::Gfx::Entity>>();
+            weaponEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)] = std::vector<UniquePointer<Daemons::Gfx::Entity>>();
             
             for(int k = 0; k < GetFramesForAnimation(static_cast<CharacterAnimations>(i)); k++) {
                 weaponEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)].push_back(
                     gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetEntity(
                         gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetSprite(
-                            gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(weaponTexture).GetWeakPointer(),
+                            gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(weaponTexture),
                             CHARACTER_WIDTH * (animationOffSet + k),
                             CHARACTER_HEIGHT * j,
                             CHARACTER_WIDTH,
                             CHARACTER_HEIGHT
-                        ).GetWeakPointer()
+                        )
                     )
                 );
             }
@@ -128,9 +128,9 @@ void EssexEngine::Libs::IsoMap::MapCharacter::SetScreenPosition(int _x, int _y) 
 }
 
 void EssexEngine::Libs::IsoMap::MapCharacter::Render(WeakPointer<Context> gameContext) {
-    WeakPointer<Daemons::Gfx::Entity> body = bodyEntities[currentAnimation][currentDirection].at(currentAnimationFrame).GetWeakPointer();
-    WeakPointer<Daemons::Gfx::Entity> head = headEntities[currentAnimation][currentDirection].at(currentAnimationFrame).GetWeakPointer();
-    WeakPointer<Daemons::Gfx::Entity> weapon = weaponEntities[currentAnimation][currentDirection].at(currentAnimationFrame).GetWeakPointer();
+    WeakPointer<Daemons::Gfx::Entity> body = bodyEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
+    WeakPointer<Daemons::Gfx::Entity> head = headEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
+    WeakPointer<Daemons::Gfx::Entity> weapon = weaponEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
     
     body->SetPosition(GetScreenX(), GetScreenY());
     body->SetScale(GetZoom(), GetZoom());

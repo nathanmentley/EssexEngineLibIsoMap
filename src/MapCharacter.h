@@ -81,9 +81,9 @@ namespace IsoMap{
     protected:
         int GetFramesForAnimation(CharacterAnimations animation);
     private:
-        std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<SharedPointer<Daemons::Gfx::Entity>>>> bodyEntities;
-        std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<SharedPointer<Daemons::Gfx::Entity>>>> headEntities;
-        std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<SharedPointer<Daemons::Gfx::Entity>>>> weaponEntities;
+        std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>> bodyEntities;
+        std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>> headEntities;
+        std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>> weaponEntities;
         
         std::queue<WeakPointer<MapCharacterAction>> actionQueue;
         

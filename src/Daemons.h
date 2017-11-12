@@ -10,6 +10,7 @@
  */
 #pragma once
 
+#include <EssexEngineCore/LogDaemon.h>
 #include <EssexEngineGfxDaemon/GfxDaemon.h>
 #include <EssexEngineJsonDaemon/JsonDaemon.h>
 #include <EssexEngineScriptDaemon/ScriptDaemon.h>
