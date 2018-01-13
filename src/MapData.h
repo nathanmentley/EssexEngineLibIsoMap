@@ -13,9 +13,13 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include <memory>
+#include <algorithm>
+#include <utility>
 
 #include <EssexEngineCore/RStarTree.h>
 #include <EssexEngineCore/Context.h>
+#include <EssexEngineCore/UniquePointer.h>
 #include <EssexEngineCore/WeakPointer.h>
 
 #include <EssexEngineLibIsoMap/Daemons.h>
@@ -71,15 +75,15 @@ namespace IsoMap{
         WeakPointer<Daemons::Json::IJsonDocument> gameDocument;
         WeakPointer<Daemons::Json::IJsonDocument> mapDocument;
         
-        std::map<int, std::unique_ptr<MapTile>> tiles;
-        std::map<int, std::unique_ptr<MapDoodadDef>> doodadDefs;
-        std::map<int, std::unique_ptr<MapCharacterDef>> characterDefs;
+        std::map<int, UniquePointer<MapTile>> tiles;
+        std::map<int, UniquePointer<MapDoodadDef>> doodadDefs;
+        std::map<int, UniquePointer<MapCharacterDef>> characterDefs;
         
         MapTileRTree map;
         DoodadRTree doodads;
         CharacterRTree characters;
         
-        std::unique_ptr<MapPlayerCharacter> player;
+        UniquePointer<MapPlayerCharacter> player;
         
         std::map<std::string, std::vector<std::string>> scripts;
     };
