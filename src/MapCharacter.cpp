@@ -127,7 +127,7 @@ void EssexEngine::Libs::IsoMap::MapCharacter::SetScreenPosition(int _x, int _y) 
     MapObject::SetScreenPosition(_x - (32 * GetZoom()), _y - (64 * GetZoom()));
 }
 
-void EssexEngine::Libs::IsoMap::MapCharacter::Render(WeakPointer<Context> gameContext) {
+void EssexEngine::Libs::IsoMap::MapCharacter::Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target) {
     WeakPointer<Daemons::Gfx::Entity> body = bodyEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
     WeakPointer<Daemons::Gfx::Entity> head = headEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
     WeakPointer<Daemons::Gfx::Entity> weapon = weaponEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
@@ -139,9 +139,9 @@ void EssexEngine::Libs::IsoMap::MapCharacter::Render(WeakPointer<Context> gameCo
     weapon->SetPosition(GetScreenX(), GetScreenY());
     weapon->SetScale(GetZoom(), GetZoom());
     
-    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(body);
-    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(head);
-    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(weapon);
+    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(target, body);
+    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(target, head);
+    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(target, weapon);
 }
 
 void EssexEngine::Libs::IsoMap::MapCharacter::Update() {

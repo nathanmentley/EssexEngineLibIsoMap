@@ -14,6 +14,7 @@
 #include <EssexEngineCore/WeakPointer.h>
 
 #include <EssexEngineJsonDaemon/IJsonDocument.h>
+#include <EssexEngineWindowDaemon/IRenderContext.h>
 
 #include <EssexEngineLibIsoMap/Daemons.h>
 
@@ -32,7 +33,7 @@ namespace IsoMap{
         
         WeakPointer<MapPlayerCharacter> GetCharacter();
         
-        void Render();
+        void Render(WeakPointer<Daemons::Window::IRenderContext> target);
         void ZoomIn();
         void ZoomOut();
         
@@ -43,11 +44,11 @@ namespace IsoMap{
         double GetScreenX();
         double GetScreenY();
         
-        double GetX(int screenX, int screenY);
-        double GetY(int screenX, int screenY);
+        double GetX(WeakPointer<Daemons::Window::IRenderContext> target, int screenX, int screenY);
+        double GetY(WeakPointer<Daemons::Window::IRenderContext> target, int screenX, int screenY);
         
-        int GetScreenX(double x, double y);
-        int GetScreenY(double x, double y);
+        int GetScreenX(WeakPointer<Daemons::Window::IRenderContext> target, double x, double y);
+        int GetScreenY(WeakPointer<Daemons::Window::IRenderContext> target, double x, double y);
     protected:
         void InitMap();
         

@@ -23,7 +23,7 @@ namespace IsoMap{
     public:
         MapDoodad(WeakPointer<Context> gameContext, std::string texture, int x, int y, int w, int h);
         ~MapDoodad();
-        void Render(WeakPointer<Context> gameContext);
+        void Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target);
         void Update();
     protected:
     private:

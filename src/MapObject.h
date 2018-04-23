@@ -25,7 +25,7 @@ namespace IsoMap{
         MapObject();
         ~MapObject();
         
-        virtual void Render(WeakPointer<Context> gameContext) = 0;
+        virtual void Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target) = 0;
         virtual void Update() = 0;
         
         virtual void SetPosition(double _x, double _y);

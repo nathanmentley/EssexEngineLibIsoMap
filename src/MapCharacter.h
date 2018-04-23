@@ -52,7 +52,7 @@ namespace IsoMap{
         
         void SetScreenPosition(int _x, int _y) override;
         
-        void Render(WeakPointer<Context> gameContext) override;
+        void Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target) override;
         virtual void Update() override;
         
         void SetAnimation(CharacterAnimations animation);

@@ -31,12 +31,12 @@ EssexEngine::Libs::IsoMap::MapDoodad::MapDoodad(WeakPointer<Context> gameContext
 
 EssexEngine::Libs::IsoMap::MapDoodad::~MapDoodad() {}
 
-void EssexEngine::Libs::IsoMap::MapDoodad::Render(WeakPointer<Context> gameContext) {
+void EssexEngine::Libs::IsoMap::MapDoodad::Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target) {
     WeakPointer<Daemons::Gfx::Entity> entity = entities.at(currentAnimationFrame).ToWeakPointer();
 
     entity->SetPosition(GetScreenX(), GetScreenY());
     entity->SetScale(GetZoom(), GetZoom());
-    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(entity);
+    gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->RenderEntity(target, entity);
 }
 
 void EssexEngine::Libs::IsoMap::MapDoodad::Update() {
