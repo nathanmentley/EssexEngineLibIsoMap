@@ -2,6 +2,7 @@ ee_setup_project("EssexEngineLibIsoMap" "src/Libs/IsoMap/")
 
 target_link_libraries(EssexEngineLibIsoMap EssexEngineCore)
 target_link_libraries(EssexEngineLibIsoMap EssexEngineGfxDaemon)
+target_link_libraries(EssexEngineLibIsoMap EssexEngineSfxDaemon)
 target_link_libraries(EssexEngineLibIsoMap EssexEngineJsonDaemon)
 target_link_libraries(EssexEngineLibIsoMap EssexEngineScriptDaemon)
 target_link_libraries(EssexEngineLibIsoMap EssexEngineFileSystemDaemon)

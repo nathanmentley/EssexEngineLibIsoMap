@@ -64,6 +64,8 @@ namespace IsoMap{
         WeakPointer<Daemons::Window::IRenderContext> target;
         
         WeakPointer<MapData> mapData;
+
+        CachedPointer<Daemons::Sfx::MusicCacheKey, Daemons::Sfx::IMusic> mapMusic;
         
         float zoom;
         double currentScreenX;

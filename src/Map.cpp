@@ -11,12 +11,18 @@
 
 #include <EssexEngineLibIsoMap/Map.h>
 
-EssexEngine::Libs::IsoMap::Map::Map(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument) {
+EssexEngine::Libs::IsoMap::Map::Map(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument):
+    mapMusic(
+        _gameContext->GetDaemon<Daemons::Sfx::SfxDaemon>()->GetMusic(
+            _gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile("content/root/Music/9_910.mp3")        
+        )
+    )
+{
     gameContext = _gameContext;
     target = _target;
     
     mapData = WeakPointer<MapData>(new MapData(_gameContext, _target, _gameDocument, _mapDocument));
-    
+
     InitMap();
     
     zoom = 1;
@@ -170,6 +176,8 @@ void EssexEngine::Libs::IsoMap::Map::Update() {
 
 void EssexEngine::Libs::IsoMap::Map::InitMap() {
     RunMapScripts("init");
+
+    gameContext->GetDaemon<Daemons::Sfx::SfxDaemon>()->PlayMusic(mapMusic.ToWeakPointer());
 }
 
 

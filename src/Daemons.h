@@ -13,6 +13,7 @@
 #include <EssexEngineCore/LogDaemon.h>
 #include <EssexEngineWindowDaemon/WindowDaemon.h>
 #include <EssexEngineGfxDaemon/GfxDaemon.h>
+#include <EssexEngineSfxDaemon/SfxDaemon.h>
 #include <EssexEngineJsonDaemon/JsonDaemon.h>
 #include <EssexEngineScriptDaemon/ScriptDaemon.h>
 #include <EssexEngineFileSystemDaemon/FileSystemDaemon.h>
