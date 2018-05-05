@@ -11,10 +11,11 @@
 
 #include <EssexEngineLibIsoMap/Map.h>
 
-EssexEngine::Libs::IsoMap::Map::Map(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument) {
+EssexEngine::Libs::IsoMap::Map::Map(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument) {
     gameContext = _gameContext;
+    target = _target;
     
-    mapData = WeakPointer<MapData>(new MapData(_gameContext, _gameDocument, _mapDocument));
+    mapData = WeakPointer<MapData>(new MapData(_gameContext, _target, _gameDocument, _mapDocument));
     
     InitMap();
     
@@ -25,14 +26,14 @@ EssexEngine::Libs::IsoMap::Map::Map(WeakPointer<Context> _gameContext, WeakPoint
 
 EssexEngine::Libs::IsoMap::Map::~Map() {}
 
-void EssexEngine::Libs::IsoMap::Map::Render(WeakPointer<Daemons::Window::IRenderContext> target) {
+void EssexEngine::Libs::IsoMap::Map::Render() {
     RunMapScripts("render_loop");
     
     //Setup Character
     GetCharacter()->SetZoom(zoom);
     GetCharacter()->SetScreenPosition(
-        GetScreenX(target, GetCharacter()->GetX(), GetCharacter()->GetY()),
-        GetScreenY(target, GetCharacter()->GetX(), GetCharacter()->GetY())
+        GetScreenX(GetCharacter()->GetX(), GetCharacter()->GetY()),
+        GetScreenY(GetCharacter()->GetX(), GetCharacter()->GetY())
     );
     
     //Setup and Render Map
@@ -52,8 +53,8 @@ void EssexEngine::Libs::IsoMap::Map::Render(WeakPointer<Daemons::Window::IRender
         double x = tileLocation.edges[0].first;
         double y = tileLocation.edges[1].first;
         
-        int screenx = GetScreenX(target, x, y);
-        int screeny = GetScreenY(target, x, y);
+        int screenx = GetScreenX(x, y);
+        int screeny = GetScreenY(x, y);
         
         entity->SetPosition(screenx, screeny);
         entity->SetScale(zoom, zoom);
@@ -75,9 +76,9 @@ void EssexEngine::Libs::IsoMap::Map::Render(WeakPointer<Daemons::Window::IRender
         double x = doodad->GetX();
         double y = doodad->GetY();
         
-        doodad->SetScreenPosition(GetScreenX(target, x, y), GetScreenY(target, x, y));
+        doodad->SetScreenPosition(GetScreenX(x, y), GetScreenY(x, y));
         doodad->SetZoom(zoom);
-        doodad->Render(gameContext, target);
+        doodad->Render(gameContext);
     }
     
     //Setup and Render Characters
@@ -94,9 +95,9 @@ void EssexEngine::Libs::IsoMap::Map::Render(WeakPointer<Daemons::Window::IRender
         double x = character->GetX();
         double y = character->GetY();
         
-        character->SetScreenPosition(GetScreenX(target, x, y), GetScreenY(target, x, y));
+        character->SetScreenPosition(GetScreenX(x, y), GetScreenY(x, y));
         character->SetZoom(zoom);
-        character->Render(gameContext, target);
+        character->Render(gameContext);
     }
 }
 
@@ -139,7 +140,7 @@ void EssexEngine::Libs::IsoMap::Map::Update() {
                     
                         if(closeCharacter->GetTeam() != character->GetTeam()) {
                             action = true;
-                            character->QueueAction(WeakPointer<MapCharacterAction>(new MapCharacterAction(MapCharacterActionTypes::Attack, closeCharacter.Cast<MapObject>())));
+                            character->QueueAction(MapCharacterActionTypes::Attack, closeCharacter.Cast<MapObject>());
                             break;
                         }
                     }
@@ -155,7 +156,7 @@ void EssexEngine::Libs::IsoMap::Map::Update() {
                             WeakPointer<MapCharacter> closeCharacter = closeCharacterInfo.character;
                             
                             if(closeCharacter->GetTeam() != character->GetTeam()) {
-                                character->QueueAction(WeakPointer<MapCharacterAction>(new MapCharacterAction(MapCharacterActionTypes::MoveTo, closeCharacter.Cast<MapObject>())));
+                                character->QueueAction(MapCharacterActionTypes::MoveTo, closeCharacter.Cast<MapObject>());
                                 break;
                             }
                         }
@@ -261,7 +262,7 @@ void EssexEngine::Libs::IsoMap::Map::RunMapScripts(std::string scriptCode) {
     }
 }
 
-int EssexEngine::Libs::IsoMap::Map::GetScreenX(WeakPointer<Daemons::Window::IRenderContext> target, double x, double y) {
+int EssexEngine::Libs::IsoMap::Map::GetScreenX(double x, double y) {
     int centerScreenX = (gameContext->GetDaemon<Daemons::Window::WindowDaemon>()->GetScreenWidth(target) / 2);
     
     double offsetX = (GetScreenX() - x);
@@ -270,7 +271,7 @@ int EssexEngine::Libs::IsoMap::Map::GetScreenX(WeakPointer<Daemons::Window::IRen
     return centerScreenX + ((offsetX - offsetY) * (MapTile::TILE_WIDTH / 2) * zoom);
 }
 
-int EssexEngine::Libs::IsoMap::Map::GetScreenY(WeakPointer<Daemons::Window::IRenderContext> target, double x, double y) {
+int EssexEngine::Libs::IsoMap::Map::GetScreenY(double x, double y) {
     int centerScreenY = (gameContext->GetDaemon<Daemons::Window::WindowDaemon>()->GetScreenHeight(target) / 2);
     
     double offsetX = (GetScreenX() - x);
@@ -279,7 +280,7 @@ int EssexEngine::Libs::IsoMap::Map::GetScreenY(WeakPointer<Daemons::Window::IRen
     return centerScreenY + ((offsetX + offsetY) * (MapTile::TILE_HEIGHT / 2) * zoom);
 }
 
-double EssexEngine::Libs::IsoMap::Map::GetX(WeakPointer<Daemons::Window::IRenderContext> target, int screenX, int screenY) {
+double EssexEngine::Libs::IsoMap::Map::GetX(int screenX, int screenY) {
     int centerScreenX = (gameContext->GetDaemon<Daemons::Window::WindowDaemon>()->GetScreenWidth(target) / 2);
     int centerScreenY = (gameContext->GetDaemon<Daemons::Window::WindowDaemon>()->GetScreenHeight(target) / 2);
     
@@ -292,7 +293,7 @@ double EssexEngine::Libs::IsoMap::Map::GetX(WeakPointer<Daemons::Window::IRender
     return ((offsetX - tempX) * MapTile::TILE_WIDTH/2) - ((offsetY - tempY) * MapTile::TILE_HEIGHT);
 }
 
-double EssexEngine::Libs::IsoMap::Map::GetY(WeakPointer<Daemons::Window::IRenderContext> target, int screenX, int screenY) {
+double EssexEngine::Libs::IsoMap::Map::GetY(int screenX, int screenY) {
     int centerScreenX = (gameContext->GetDaemon<Daemons::Window::WindowDaemon>()->GetScreenWidth(target) / 2);
     int centerScreenY = (gameContext->GetDaemon<Daemons::Window::WindowDaemon>()->GetScreenHeight(target) / 2);
     

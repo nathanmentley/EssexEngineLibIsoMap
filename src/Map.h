@@ -28,12 +28,12 @@ namespace IsoMap{
     class Map
     {
     public:
-        Map(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument);
+        Map(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument);
         ~Map();
         
         WeakPointer<MapPlayerCharacter> GetCharacter();
         
-        void Render(WeakPointer<Daemons::Window::IRenderContext> target);
+        void Render();
         void ZoomIn();
         void ZoomOut();
         
@@ -44,11 +44,11 @@ namespace IsoMap{
         double GetScreenX();
         double GetScreenY();
         
-        double GetX(WeakPointer<Daemons::Window::IRenderContext> target, int screenX, int screenY);
-        double GetY(WeakPointer<Daemons::Window::IRenderContext> target, int screenX, int screenY);
+        double GetX(int screenX, int screenY);
+        double GetY(int screenX, int screenY);
         
-        int GetScreenX(WeakPointer<Daemons::Window::IRenderContext> target, double x, double y);
-        int GetScreenY(WeakPointer<Daemons::Window::IRenderContext> target, double x, double y);
+        int GetScreenX(double x, double y);
+        int GetScreenY(double x, double y);
     protected:
         void InitMap();
         
@@ -61,6 +61,7 @@ namespace IsoMap{
         void RunMapScripts(std::string scriptCode);
     private:
         WeakPointer<Context> gameContext;
+        WeakPointer<Daemons::Window::IRenderContext> target;
         
         WeakPointer<MapData> mapData;
         

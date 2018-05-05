@@ -11,8 +11,8 @@
 
 #include <EssexEngineLibIsoMap/MapPlayerCharacter.h>
 
-EssexEngine::Libs::IsoMap::MapPlayerCharacter::MapPlayerCharacter(WeakPointer<Context> gameContext, std::string bodyTexture, std::string headTexture, std::string weaponTexture)
-:MapCharacter(gameContext, bodyTexture, headTexture, weaponTexture) {
+EssexEngine::Libs::IsoMap::MapPlayerCharacter::MapPlayerCharacter(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target, std::string bodyTexture, std::string headTexture, std::string weaponTexture)
+:MapCharacter(gameContext, target, bodyTexture, headTexture, weaponTexture) {
     SetTeam(0);
 }
 

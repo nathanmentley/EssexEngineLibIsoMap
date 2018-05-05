@@ -11,13 +11,15 @@
 
 #include <EssexEngineLibIsoMap/MapDoodad.h>
 
-EssexEngine::Libs::IsoMap::MapDoodad::MapDoodad(WeakPointer<Context> gameContext, std::string texture, int x, int y, int w, int h)
+EssexEngine::Libs::IsoMap::MapDoodad::MapDoodad(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, std::string texture, int x, int y, int w, int h)
 :MapObject() {
+    target = _target;
     entities = std::vector<UniquePointer<Daemons::Gfx::Entity>>();
     currentAnimationFrame = 0;
     
     UniquePointer<Daemons::Gfx::Entity> entity = gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetEntity(
         gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetSprite(
+            target,
             gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(texture),
             x,
             y,
@@ -31,7 +33,7 @@ EssexEngine::Libs::IsoMap::MapDoodad::MapDoodad(WeakPointer<Context> gameContext
 
 EssexEngine::Libs::IsoMap::MapDoodad::~MapDoodad() {}
 
-void EssexEngine::Libs::IsoMap::MapDoodad::Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target) {
+void EssexEngine::Libs::IsoMap::MapDoodad::Render(WeakPointer<Context> gameContext) {
     WeakPointer<Daemons::Gfx::Entity> entity = entities.at(currentAnimationFrame).ToWeakPointer();
 
     entity->SetPosition(GetScreenX(), GetScreenY());

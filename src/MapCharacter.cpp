@@ -11,8 +11,9 @@
 
 #include <EssexEngineLibIsoMap/MapCharacter.h>
 
-EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameContext, std::string bodyTexture, std::string headTexture, std::string weaponTexture)
+EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, std::string bodyTexture, std::string headTexture, std::string weaponTexture)
 :MapObject() {
+    target = _target;
     bodyEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>>();
     headEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>>();
     weaponEntities = std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>>();
@@ -33,6 +34,7 @@ EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameC
                 bodyEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)].push_back(
                     gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetEntity(
                         gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetSprite(
+                            target,
                             gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(bodyTexture),
                             CHARACTER_WIDTH * (animationOffSet + k),
                             CHARACTER_HEIGHT * j,
@@ -60,6 +62,7 @@ EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameC
                 headEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)].push_back(
                     gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetEntity(
                         gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetSprite(
+                            target,
                             gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(headTexture),
                             CHARACTER_WIDTH * (animationOffSet + k),
                             CHARACTER_HEIGHT * j,
@@ -87,6 +90,7 @@ EssexEngine::Libs::IsoMap::MapCharacter::MapCharacter(WeakPointer<Context> gameC
                 weaponEntities[static_cast<CharacterAnimations>(i)][static_cast<CharacterDirections>(j)].push_back(
                     gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetEntity(
                         gameContext->GetDaemon<EssexEngine::Daemons::Gfx::GfxDaemon>()->GetSprite(
+                            target,
                             gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(weaponTexture),
                             CHARACTER_WIDTH * (animationOffSet + k),
                             CHARACTER_HEIGHT * j,
@@ -127,7 +131,7 @@ void EssexEngine::Libs::IsoMap::MapCharacter::SetScreenPosition(int _x, int _y) 
     MapObject::SetScreenPosition(_x - (32 * GetZoom()), _y - (64 * GetZoom()));
 }
 
-void EssexEngine::Libs::IsoMap::MapCharacter::Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target) {
+void EssexEngine::Libs::IsoMap::MapCharacter::Render(WeakPointer<Context> gameContext) {
     WeakPointer<Daemons::Gfx::Entity> body = bodyEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
     WeakPointer<Daemons::Gfx::Entity> head = headEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
     WeakPointer<Daemons::Gfx::Entity> weapon = weaponEntities[currentAnimation][currentDirection].at(currentAnimationFrame).ToWeakPointer();
@@ -235,8 +239,20 @@ std::queue<EssexEngine::WeakPointer<EssexEngine::Libs::IsoMap::MapCharacterActio
     return actionQueue;
 }
 
-void EssexEngine::Libs::IsoMap::MapCharacter::QueueAction(EssexEngine::WeakPointer<MapCharacterAction> action) {
+void EssexEngine::Libs::IsoMap::MapCharacter::QueueAction(MapCharacterActionTypes _type) {
     if(!IsDead()) {
+        EssexEngine::WeakPointer<MapCharacterAction> action = WeakPointer<MapCharacterAction>(
+            new MapCharacterAction(_type, WeakPointer<MapObject>())
+        );
+        actionQueue.push(action);
+    }
+}
+
+void EssexEngine::Libs::IsoMap::MapCharacter::QueueAction(MapCharacterActionTypes _type, WeakPointer<MapObject> _target) {
+    if(!IsDead()) {
+        EssexEngine::WeakPointer<MapCharacterAction> action = WeakPointer<MapCharacterAction>(
+            new MapCharacterAction(_type, _target)
+        );
         actionQueue.push(action);
     }
 }

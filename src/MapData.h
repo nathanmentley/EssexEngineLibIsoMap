@@ -38,7 +38,7 @@ namespace IsoMap{
     class MapData
     {
     public:
-        MapData(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument);
+        MapData(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument);
         ~MapData();
         
         WeakPointer<MapTile> GetTile(int id);
@@ -72,6 +72,7 @@ namespace IsoMap{
         void LoadScripts();
     private:
         WeakPointer<Context> gameContext;
+        WeakPointer<Daemons::Window::IRenderContext> target;
         WeakPointer<Daemons::Json::IJsonDocument> gameDocument;
         WeakPointer<Daemons::Json::IJsonDocument> mapDocument;
         

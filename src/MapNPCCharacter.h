@@ -18,7 +18,7 @@ namespace IsoMap{
     class MapNPCCharacter: public MapCharacter
     {
     public:
-        MapNPCCharacter(WeakPointer<Context> gameContext, std::string bodyTexture, std::string headTexture, std::string weaponTexture);
+        MapNPCCharacter(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, std::string bodyTexture, std::string headTexture, std::string weaponTexture);
         ~MapNPCCharacter();
     };
 }}};

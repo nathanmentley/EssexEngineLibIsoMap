@@ -47,12 +47,12 @@ namespace IsoMap{
         static const int CHARACTER_WIDTH = 128;
         static const int CHARACTER_HEIGHT = 128;
         
-        MapCharacter(WeakPointer<Context> gameContext, std::string bodyTexture, std::string headTexture, std::string weaponTexture);
+        MapCharacter(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, std::string bodyTexture, std::string headTexture, std::string weaponTexture);
         ~MapCharacter();
         
         void SetScreenPosition(int _x, int _y) override;
         
-        void Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target) override;
+        void Render(WeakPointer<Context> gameContext) override;
         virtual void Update() override;
         
         void SetAnimation(CharacterAnimations animation);
@@ -75,12 +75,15 @@ namespace IsoMap{
         void SetDamage(int _damage);
         
         std::queue<WeakPointer<MapCharacterAction>> GetQueuedAction();
-        void QueueAction(WeakPointer<MapCharacterAction> action);
+        void QueueAction(MapCharacterActionTypes _type);
+        void QueueAction(MapCharacterActionTypes _type, WeakPointer<MapObject> _target);
         
         bool IsDead();
     protected:
         int GetFramesForAnimation(CharacterAnimations animation);
     private:
+        WeakPointer<Daemons::Window::IRenderContext> target;
+
         std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>> bodyEntities;
         std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>> headEntities;
         std::map<CharacterAnimations, std::map<CharacterDirections,std::vector<UniquePointer<Daemons::Gfx::Entity>>>> weaponEntities;

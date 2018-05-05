@@ -11,11 +11,12 @@
 
 #include <EssexEngineLibIsoMap/MapData.h>
 
-EssexEngine::Libs::IsoMap::MapData::MapData(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument) :
+EssexEngine::Libs::IsoMap::MapData::MapData(WeakPointer<Context> _gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, WeakPointer<Daemons::Json::IJsonDocument> _gameDocument, WeakPointer<Daemons::Json::IJsonDocument> _mapDocument) :
     tiles(std::map<int, EssexEngine::UniquePointer<MapTile>>()),
     doodadDefs(std::map<int, EssexEngine::UniquePointer<MapDoodadDef>>()),
     characterDefs(std::map<int, EssexEngine::UniquePointer<MapCharacterDef>>())
 {
+    target = _target;
     gameContext = _gameContext;
     
     map = MapTileRTree();
@@ -309,6 +310,7 @@ void EssexEngine::Libs::IsoMap::MapData::LoadTiles() {
                 new MapTile(
                     gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetEntity(
                         gameContext->GetDaemon<Daemons::Gfx::GfxDaemon>()->GetSprite(
+                            target,
                             gameContext->GetDaemon<Daemons::FileSystem::FileSystemDaemon>()->ReadFile(filename),
                             spritex,
                             spritey,
@@ -416,7 +418,7 @@ void EssexEngine::Libs::IsoMap::MapData::LoadDoodads() {
         bbdoodad.edges[1].first  = y;
         bbdoodad.edges[1].second = y+h;
         
-        MapDoodad* doodadObj = new MapDoodad(gameContext, filename, spritex, spritey, spriteh, spritew);
+        MapDoodad* doodadObj = new MapDoodad(gameContext, target, filename, spritex, spritey, spriteh, spritew);
         doodadObj->SetPosition(x, y);
         doodads.Insert(
             doodadObj,
@@ -450,6 +452,7 @@ void EssexEngine::Libs::IsoMap::MapData::LoadNPCs() {
         
         MapNPCCharacter* npcObj = new MapNPCCharacter(
             gameContext,
+            target,
             filenamebody,
             filenamehead,
             filenameweapon
@@ -477,6 +480,7 @@ void EssexEngine::Libs::IsoMap::MapData::LoadPlayer() {
     UniquePointer<MapPlayerCharacter>(
         new MapPlayerCharacter(
             gameContext,
+            target,
             filenamebody,
             filenamehead,
             filenameweapon

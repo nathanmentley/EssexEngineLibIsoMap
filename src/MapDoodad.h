@@ -21,12 +21,13 @@ namespace IsoMap{
     class MapDoodad: public MapObject
     {
     public:
-        MapDoodad(WeakPointer<Context> gameContext, std::string texture, int x, int y, int w, int h);
+        MapDoodad(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, std::string texture, int x, int y, int w, int h);
         ~MapDoodad();
-        void Render(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target);
+        void Render(WeakPointer<Context> gameContext);
         void Update();
     protected:
     private:
+        WeakPointer<Daemons::Window::IRenderContext> target;
         std::vector<UniquePointer<Daemons::Gfx::Entity>> entities;
         int currentAnimationFrame;
     };

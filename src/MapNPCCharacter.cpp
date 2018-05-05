@@ -11,8 +11,8 @@
 
 #include <EssexEngineLibIsoMap/MapNPCCharacter.h>
 
-EssexEngine::Libs::IsoMap::MapNPCCharacter::MapNPCCharacter(WeakPointer<Context> gameContext, std::string bodyTexture, std::string headTexture, std::string weaponTexture)
-:MapCharacter(gameContext, bodyTexture, headTexture, weaponTexture) {
+EssexEngine::Libs::IsoMap::MapNPCCharacter::MapNPCCharacter(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> target, std::string bodyTexture, std::string headTexture, std::string weaponTexture)
+:MapCharacter(gameContext, target, bodyTexture, headTexture, weaponTexture) {
 }
 
 EssexEngine::Libs::IsoMap::MapNPCCharacter::~MapNPCCharacter() {

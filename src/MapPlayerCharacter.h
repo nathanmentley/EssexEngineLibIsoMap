@@ -18,8 +18,8 @@ namespace IsoMap{
     class MapPlayerCharacter: public MapCharacter
     {
     public:
-        MapPlayerCharacter(WeakPointer<Context> gameContext, std::string bodyTexture, std::string headTexture, std::string weaponTexture);
-        ~MapPlayerCharacter();
+        MapPlayerCharacter(WeakPointer<Context> gameContext, WeakPointer<Daemons::Window::IRenderContext> _target, std::string bodyTexture, std::string headTexture, std::string weaponTexture);
+        virtual ~MapPlayerCharacter();
     protected:
     private:
     };
